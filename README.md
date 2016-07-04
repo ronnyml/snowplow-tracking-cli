@@ -1,6 +1,6 @@
-# snowplow-tracking-cli
-
 The Snowplow Tracking CLI is a command-line app (written in Golang) to make it easy to send an event to Snowplow from the command line. Use this to embed Snowplow tracking into your shell scripts.
+
+### Usage
 
 The app is called `snowplowtrk`.
 
