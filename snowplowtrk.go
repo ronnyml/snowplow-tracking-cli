@@ -4,8 +4,12 @@ import(
 	"fmt"
 	"os"
 	"github.com/urfave/cli"
-	//"gopkg.in/snowplow/snowplow-golang-tracker.v1/tracker"
+	gt "gopkg.in/snowplow/snowplow-golang-tracker.v1/tracker"
 )
+
+var tracker gt.Tracker
+var sdjson *gt.SelfDescribingJson
+var sdj []gt.SelfDescribingJson
 
 func main() {
     app := cli.NewApp()
@@ -38,20 +42,71 @@ func main() {
 	}
 
     app.Action = func(c *cli.Context) error {
-    	appid := c.String("appid")
+    	collector := c.Args().Get(0)
+        appid := c.String("appid")
     	method := c.String("method")
     	sdjson := c.String("sdjson")
     	schema := c.String("schema")
     	json := c.String("json")
 
+        fmt.Println("Collector:", collector)
         fmt.Println("APP ID:", appid)
         fmt.Println("Method:", method)
         fmt.Println("Self-Describing JSON:", sdjson)
         fmt.Println("Schema:", schema)
         fmt.Println("JSON:", json)
+
+        initTracker(collector, appid)
         return nil
     }
 
     app.Run(os.Args)
+}
+
+func initTracker(collector string, appid string) {
+	subject := gt.InitSubject()
+    emitter := gt.InitEmitter(gt.RequireCollectorUri(collector))
+    tracker := gt.InitTracker(
+	    gt.RequireEmitter(emitter),
+		gt.OptionSubject(subject),
+		gt.OptionAppId(appid),
+	)
+}
+
+func trackPageView(pageurl string) {
+	tracker.TrackPageView(
+        gt.PageViewEvent{ 
+        PageUrl: gt.NewString(pageurl),
+        Contexts: sdj,
+      },
+    )
+}
+
+func trackScreenView(screen_id string) {
+	tracker.TrackScreenView(gt.ScreenViewEvent{ 
+        Id: gt.NewString(screen_id),
+    })
+}
+
+func trackSelfDescribingEvent() {
+	tracker.TrackSelfDescribingEvent(gt.SelfDescribingEvent{ 
+        Event: sdjson,
+    })
+}
+
+func trackStructEvent(category string, action string, label string) {
+	tracker.TrackStructEvent(gt.StructuredEvent{ 
+	    Category: gt.NewString(category),
+		Action: gt.NewString(action),
+		Label: gt.NewString(label),
+	})
+}
+
+func trackTiming(category string, variable string, timing int64) {
+    tracker.TrackTiming(gt.TimingEvent{ 
+	    Category: gt.NewString(category),
+	    Variable: gt.NewString(variable),
+	    Timing: gt.NewInt64(timing),
+	})
 }
 
