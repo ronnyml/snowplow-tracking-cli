@@ -115,10 +115,3 @@ func trackStructEvent(category string, action string, label string) {
         })
 }
 
-func trackTiming(category string, variable string, timing int64) {
-        tracker.TrackTiming(gt.TimingEvent{
-                Category: gt.NewString(category),
-                Variable: gt.NewString(variable),
-                Timing:   gt.NewInt64(timing),
-        })
-}
