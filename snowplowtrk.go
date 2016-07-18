@@ -22,7 +22,7 @@ import (
 
 var tracker gt.Tracker
 var sdjson *gt.SelfDescribingJson
-var sdj []gt.SelfDescribingJson
+var contextArray []gt.SelfDescribingJson
 
 func main() {
         app := cli.NewApp()
@@ -70,6 +70,7 @@ func main() {
                 fmt.Println("JSON:", json)
 
                 initTracker(collector, appid)
+
                 return nil
         }
 
@@ -90,7 +91,7 @@ func trackPageView(pageurl string) {
         tracker.TrackPageView(
                 gt.PageViewEvent{
                         PageUrl:  gt.NewString(pageurl),
-                        Contexts: sdj,
+                        Contexts: contextArray,
                 },
         )
 }
@@ -98,12 +99,14 @@ func trackPageView(pageurl string) {
 func trackScreenView(screen_id string) {
         tracker.TrackScreenView(gt.ScreenViewEvent{
                 Id: gt.NewString(screen_id),
+                Contexts: contextArray,
         })
 }
 
 func trackSelfDescribingEvent() {
         tracker.TrackSelfDescribingEvent(gt.SelfDescribingEvent{
                 Event: sdjson,
+                Contexts: contextArray,
         })
 }
 
@@ -112,6 +115,7 @@ func trackStructEvent(category string, action string, label string) {
                 Category: gt.NewString(category),
                 Action:   gt.NewString(action),
                 Label:    gt.NewString(label),
+                Contexts: contextArray,
         })
 }
 
