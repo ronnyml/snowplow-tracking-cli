@@ -21,7 +21,7 @@ import (
 )
 
 var tracker gt.Tracker
-var sdjson *gt.SelfDescribingJson
+var sdj *gt.SelfDescribingJson
 var contextArray []gt.SelfDescribingJson
 
 func main() {
@@ -62,14 +62,28 @@ func main() {
                 schema := c.String("schema")
                 json := c.String("json")
 
-                fmt.Println("Collector:", collector)
-                fmt.Println("APP ID:", appid)
-                fmt.Println("Method:", method)
-                fmt.Println("Self-Describing JSON:", sdjson)
-                fmt.Println("Schema:", schema)
-                fmt.Println("JSON:", json)
+                if sdjson == "" && schema == "" && json == "" {
+                        panic("FATAL: A --sdjson or a --schema URI plus a --json need to be specified.")
+                } else if sdjson == "" && schema != "" && json == "" {
+                        panic("FATAL: A --json need to be specified.")
+                } else if sdjson == "" && schema == "" && json != "" {
+                        panic("FATAL: A --schema URI need to be specified.")
+                } else {
+                        if schema != "" && json != "" {
+                                contextArray = []gt.SelfDescribingJson{
+                                        *gt.InitSelfDescribingJson(schema, json),
+                                }
+                                sdj = gt.InitSelfDescribingJson(schema, json)
+                        }
+                        fmt.Println("Collector:", collector)
+                        fmt.Println("APP ID:", appid)
+                        fmt.Println("Method:", method)
+                        fmt.Println("Self-Describing JSON:", sdjson)
+                        fmt.Println("Schema:", schema)
+                        fmt.Println("JSON:", json)
 
-                initTracker(collector, appid)
+                        initTracker(collector, appid)
+                }
 
                 return nil
         }
@@ -98,14 +112,14 @@ func trackPageView(pageurl string) {
 
 func trackScreenView(screen_id string) {
         tracker.TrackScreenView(gt.ScreenViewEvent{
-                Id: gt.NewString(screen_id),
+                Id:       gt.NewString(screen_id),
                 Contexts: contextArray,
         })
 }
 
 func trackSelfDescribingEvent() {
         tracker.TrackSelfDescribingEvent(gt.SelfDescribingEvent{
-                Event: sdjson,
+                Event:    sdj,
                 Contexts: contextArray,
         })
 }
@@ -118,4 +132,3 @@ func trackStructEvent(category string, action string, label string) {
                 Contexts: contextArray,
         })
 }
-
