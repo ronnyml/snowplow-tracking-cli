@@ -21,7 +21,7 @@ import (
         "os"
 )
 
-var tracker gt.Tracker
+var tracker *gt.Tracker
 var sdj *gt.SelfDescribingJson
 var contextArray []gt.SelfDescribingJson
 var emitter *gt.Emitter
@@ -96,7 +96,7 @@ func main() {
 func initTracker(collector string, appid string) {
         subject := gt.InitSubject()
         emitter = gt.InitEmitter(gt.RequireCollectorUri(collector))
-        tracker := gt.InitTracker(
+        tracker = gt.InitTracker(
                 gt.RequireEmitter(emitter),
                 gt.OptionSubject(subject),
                 gt.OptionAppId(appid),
