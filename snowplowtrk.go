@@ -17,12 +17,14 @@ import (
         "fmt"
         "github.com/urfave/cli"
         gt "gopkg.in/snowplow/snowplow-golang-tracker.v1/tracker"
+        "net/http"
         "os"
 )
 
 var tracker gt.Tracker
 var sdj *gt.SelfDescribingJson
 var contextArray []gt.SelfDescribingJson
+var emitter *gt.Emitter
 
 func main() {
         app := cli.NewApp()
@@ -93,12 +95,36 @@ func main() {
 
 func initTracker(collector string, appid string) {
         subject := gt.InitSubject()
-        emitter := gt.InitEmitter(gt.RequireCollectorUri(collector))
+        emitter = gt.InitEmitter(gt.RequireCollectorUri(collector))
         tracker := gt.InitTracker(
                 gt.RequireEmitter(emitter),
                 gt.OptionSubject(subject),
                 gt.OptionAppId(appid),
         )
+}
+
+func getReturnCode(req *http.Request) int {
+        resp, err := emitter.HttpClient.Do(req)
+        if err != nil {
+                panic(err)
+        }
+
+        var returnCode int
+        result := resp.StatusCode / 100
+
+        switch result {
+        case 2, 3:
+                returnCode = 0
+        case 4:
+                returnCode = 4
+        case 5:
+                returnCode = 5
+        default:
+                returnCode = 1
+
+        }
+
+        return returnCode
 }
 
 func trackPageView(pageurl string) {
