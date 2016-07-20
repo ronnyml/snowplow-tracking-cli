@@ -31,7 +31,7 @@ func main() {
         app.Name = "snowplowtrk"
         app.Usage = "The Snowplow Tracking CLI"
         app.Author = "Snowplow Analytics"
-        app.Version = "0.1"
+        app.Version = "0.1.0"
         app.Flags = []cli.Flag{
                 cli.StringFlag{
                         Name:  "appid, id",
