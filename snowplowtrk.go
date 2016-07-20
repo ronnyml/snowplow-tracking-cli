@@ -23,7 +23,6 @@ import (
 
 var tracker *gt.Tracker
 var sdj *gt.SelfDescribingJson
-var contextArray []gt.SelfDescribingJson
 var emitter *gt.Emitter
 
 func main() {
@@ -72,9 +71,6 @@ func main() {
                         panic("FATAL: A --schema URI need to be specified.")
                 } else {
                         if schema != "" && json != "" {
-                                contextArray = []gt.SelfDescribingJson{
-                                        *gt.InitSelfDescribingJson(schema, json),
-                                }
                                 sdj = gt.InitSelfDescribingJson(schema, json)
                         }
                         fmt.Println("Collector:", collector)
@@ -130,6 +126,5 @@ func getReturnCode(req *http.Request) int {
 func trackSelfDescribingEvent() {
         tracker.TrackSelfDescribingEvent(gt.SelfDescribingEvent{
                 Event:    sdj,
-                Contexts: contextArray,
         })
 }
