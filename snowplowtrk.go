@@ -127,34 +127,9 @@ func getReturnCode(req *http.Request) int {
         return returnCode
 }
 
-func trackPageView(pageurl string) {
-        tracker.TrackPageView(
-                gt.PageViewEvent{
-                        PageUrl:  gt.NewString(pageurl),
-                        Contexts: contextArray,
-                },
-        )
-}
-
-func trackScreenView(screen_id string) {
-        tracker.TrackScreenView(gt.ScreenViewEvent{
-                Id:       gt.NewString(screen_id),
-                Contexts: contextArray,
-        })
-}
-
 func trackSelfDescribingEvent() {
         tracker.TrackSelfDescribingEvent(gt.SelfDescribingEvent{
                 Event:    sdj,
-                Contexts: contextArray,
-        })
-}
-
-func trackStructEvent(category string, action string, label string) {
-        tracker.TrackStructEvent(gt.StructuredEvent{
-                Category: gt.NewString(category),
-                Action:   gt.NewString(action),
-                Label:    gt.NewString(label),
                 Contexts: contextArray,
         })
 }
