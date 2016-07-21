@@ -21,9 +21,7 @@ import (
         "os"
 )
 
-var tracker *gt.Tracker
 var sdj *gt.SelfDescribingJson
-var emitter *gt.Emitter
 
 func main() {
         app := cli.NewApp()
@@ -91,12 +89,14 @@ func main() {
 
 func initTracker(collector string, appid string) {
         subject := gt.InitSubject()
-        emitter = gt.InitEmitter(gt.RequireCollectorUri(collector))
-        tracker = gt.InitTracker(
+        emitter := gt.InitEmitter(gt.RequireCollectorUri(collector))
+        tracker := gt.InitTracker(
                 gt.RequireEmitter(emitter),
                 gt.OptionSubject(subject),
                 gt.OptionAppId(appid),
         )
+
+        trackSelfDescribingEvent(tracker)
 }
 
 func getReturnCode(req *http.Request) int {
@@ -123,8 +123,8 @@ func getReturnCode(req *http.Request) int {
         return returnCode
 }
 
-func trackSelfDescribingEvent() {
+func trackSelfDescribingEvent(tracker *gt.Tracker) {
         tracker.TrackSelfDescribingEvent(gt.SelfDescribingEvent{
-                Event:    sdj,
+                Event: sdj,
         })
 }
