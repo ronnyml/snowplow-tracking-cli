@@ -20,8 +20,8 @@
 		},
 		{
 			"ImportPath": "gopkg.in/snowplow/snowplow-golang-tracker.v1/tracker",
-			"Comment": "v1.0.0",
-			"Rev": "26c2df672113e9a2c4feb1533b3360854112adc0"
+			"Comment": "v1.1.0",
+			"Rev": "442b75c4783edba2940b5612b9b2e5b717f540ea"
 		}
 	]
 }
