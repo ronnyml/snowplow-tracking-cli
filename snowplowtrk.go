@@ -17,8 +17,8 @@ import (
         "fmt"
         "github.com/urfave/cli"
         gt "gopkg.in/snowplow/snowplow-golang-tracker.v1/tracker"
-        "net/http"
         "os"
+        "strconv"
 )
 
 var sdj *gt.SelfDescribingJson
@@ -99,16 +99,10 @@ func initTracker(collector string, appid string) {
         trackSelfDescribingEvent(tracker)
 }
 
-func getReturnCode(req *http.Request) int {
-        resp, err := emitter.HttpClient.Do(req)
-        if err != nil {
-                panic(err)
-        }
-
+func getReturnCode(statusCode int) int {
         var returnCode int
-        result := resp.StatusCode / 100
 
-        switch result {
+        switch statusCode {
         case 2, 3:
                 returnCode = 0
         case 4:
@@ -120,6 +114,7 @@ func getReturnCode(req *http.Request) int {
 
         }
 
+        fmt.Println("ReturnCode:", strconv.Itoa(returnCode))
         return returnCode
 }
 
