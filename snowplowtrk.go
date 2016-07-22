@@ -14,12 +14,18 @@
 package main
 
 import (
+        "encoding/json"
         "fmt"
         "github.com/urfave/cli"
         gt "gopkg.in/snowplow/snowplow-golang-tracker.v1/tracker"
         "os"
         "strconv"
 )
+
+type SelfDescJson struct {
+        Schema string                 `json:"schema"`
+        Data   map[string]interface{} `json:"data"`
+}
 
 var sdj *gt.SelfDescribingJson
 
@@ -59,17 +65,28 @@ func main() {
                 method := c.String("method")
                 sdjson := c.String("sdjson")
                 schema := c.String("schema")
-                json := c.String("json")
+                jsonData := c.String("json")
 
-                if sdjson == "" && schema == "" && json == "" {
+                if sdjson == "" && schema == "" && jsonData == "" {
                         panic("FATAL: A --sdjson or a --schema URI plus a --json need to be specified.")
-                } else if sdjson == "" && schema != "" && json == "" {
+                } else if sdjson == "" && schema != "" && jsonData == "" {
                         panic("FATAL: A --json need to be specified.")
-                } else if sdjson == "" && schema == "" && json != "" {
+                } else if sdjson == "" && schema == "" && jsonData != "" {
                         panic("FATAL: A --schema URI need to be specified.")
                 } else {
-                        if schema != "" && json != "" {
-                                sdj = gt.InitSelfDescribingJson(schema, json)
+                        if sdjson != "" {
+                                res := SelfDescJson{}
+                                json.Unmarshal([]byte(text), &res)
+                                data, err := json.Marshal(res.Data)
+                                if err != nil {
+                                        panic(err)
+                                }
+                                
+                                fmt.Println("Schema:", res.Schema)
+                                fmt.Println("Data:", string(data))
+                                sdj = gt.InitSelfDescribingJson(res.Schema, string(data))
+                        } else if schema != "" && jsonData != "" {
+                                sdj = gt.InitSelfDescribingJson(schema, jsonData)
                         }
 
                         fmt.Println("Collector:", collector)
@@ -77,7 +94,7 @@ func main() {
                         fmt.Println("Method:", method)
                         fmt.Println("Self-Describing JSON:", sdjson)
                         fmt.Println("Schema:", schema)
-                        fmt.Println("JSON:", json)
+                        fmt.Println("JSON:", jsonData)
 
                         initTracker(collector, appid)
                 }
@@ -94,12 +111,12 @@ func initTracker(collector string, appid string) {
 
         subject := gt.InitSubject()
         emitter := gt.InitEmitter(
-            gt.RequireCollectorUri(collector),
-            gt.OptionCallback(func(s []gt.CallbackResult, f []gt.CallbackResult) {
-                  successes = len(s)
-                  failures = len(f)
+                gt.RequireCollectorUri(collector),
+                gt.OptionCallback(func(s []gt.CallbackResult, f []gt.CallbackResult) {
+                        successes = len(s)
+                        failures = len(f)
                 }),
-            )
+        )
 
         tracker := gt.InitTracker(
                 gt.RequireEmitter(emitter),
