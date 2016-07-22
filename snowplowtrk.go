@@ -76,12 +76,12 @@ func main() {
                 } else {
                         if sdjson != "" {
                                 res := SelfDescJson{}
-                                json.Unmarshal([]byte(text), &res)
+                                json.Unmarshal([]byte(sdjson), &res)
                                 data, err := json.Marshal(res.Data)
                                 if err != nil {
                                         panic(err)
                                 }
-                                
+
                                 fmt.Println("Schema:", res.Schema)
                                 fmt.Println("Data:", string(data))
                                 sdj = gt.InitSelfDescribingJson(res.Schema, string(data))
