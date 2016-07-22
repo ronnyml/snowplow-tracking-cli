@@ -71,6 +71,7 @@ func main() {
                         if schema != "" && json != "" {
                                 sdj = gt.InitSelfDescribingJson(schema, json)
                         }
+
                         fmt.Println("Collector:", collector)
                         fmt.Println("APP ID:", appid)
                         fmt.Println("Method:", method)
@@ -88,8 +89,18 @@ func main() {
 }
 
 func initTracker(collector string, appid string) {
+        var successes int
+        var failures int
+
         subject := gt.InitSubject()
-        emitter := gt.InitEmitter(gt.RequireCollectorUri(collector))
+        emitter := gt.InitEmitter(
+            gt.RequireCollectorUri(collector),
+            gt.OptionCallback(func(s []gt.CallbackResult, f []gt.CallbackResult) {
+                  successes = len(s)
+                  failures = len(f)
+                }),
+            )
+
         tracker := gt.InitTracker(
                 gt.RequireEmitter(emitter),
                 gt.OptionSubject(subject),
@@ -97,6 +108,9 @@ func initTracker(collector string, appid string) {
         )
 
         trackSelfDescribingEvent(tracker)
+
+        fmt.Println("Successes: " + strconv.Itoa(successes))
+        fmt.Println("Failures: " + strconv.Itoa(failures))
 }
 
 func getReturnCode(statusCode int) int {
