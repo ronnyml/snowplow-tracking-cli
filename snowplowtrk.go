@@ -113,7 +113,7 @@ func main() {
                                 trackerChan <- status
                         }
 
-                        tracker := initTracker(collector, appid, callback)
+                        tracker := initTracker(collector, appid, method, callback)
                         trackSelfDescribingEvent(tracker)
 
                         statusCode := <-trackerChan
@@ -127,10 +127,11 @@ func main() {
         app.Run(os.Args)
 }
 
-func initTracker(collector string, appid string, callback func(successCount []gt.CallbackResult, failureCount []gt.CallbackResult)) *gt.Tracker {
+func initTracker(collector string, appid string, requestType string, callback func(successCount []gt.CallbackResult, failureCount []gt.CallbackResult)) *gt.Tracker {
         subject := gt.InitSubject()
         emitter := gt.InitEmitter(gt.RequireCollectorUri(collector),
-                gt.OptionCallback(callback))
+                gt.OptionCallback(callback),
+                gt.OptionRequestType(requestType),)
         tracker := gt.InitTracker(
                 gt.RequireEmitter(emitter),
                 gt.OptionSubject(subject),
