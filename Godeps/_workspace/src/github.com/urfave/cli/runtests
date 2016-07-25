@@ -18,7 +18,7 @@ def main(sysargs=sys.argv[:]):
     targets = {
         'vet': _vet,
         'test': _test,
-        'gfmxr': _gfmxr,
+        'gfmrun': _gfmrun,
         'toc': _toc,
         'gen': _gen,
     }
@@ -56,8 +56,8 @@ def _test():
     os.remove(combined_name)
 
 
-def _gfmxr():
-    _run(['gfmxr', '-c', str(_gfmxr_count()), '-s', 'README.md'])
+def _gfmrun():
+    _run(['gfmrun', '-c', str(_gfmrun_count()), '-s', 'README.md'])
 
 
 def _vet():
@@ -71,11 +71,11 @@ def _toc():
 
 def _gen():
     go_version = check_output('go version'.split()).split()[2]
-    if go_version < 'go1.4':
+    if go_version < 'go1.5':
         print('runtests: skip on {}'.format(go_version), file=sys.stderr)
         return
 
-    _run('go generate .')
+    _run('go generate ./...')
     _run('git diff --exit-code')
 
 
@@ -86,7 +86,7 @@ def _run(command):
     check_call(command)
 
 
-def _gfmxr_count():
+def _gfmrun_count():
     with open('README.md') as infile:
         lines = infile.read().splitlines()
         return len(filter(_is_go_runnable, lines))

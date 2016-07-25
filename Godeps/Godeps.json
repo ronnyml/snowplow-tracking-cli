@@ -1,12 +1,12 @@
 {
 	"ImportPath": "github.com/snowplow/snowplow-tracking-cli",
-	"GoVersion": "go1.6",
+	"GoVersion": "go1.5",
 	"GodepVersion": "v74",
 	"Deps": [
 		{
 			"ImportPath": "github.com/mattn/go-sqlite3",
-			"Comment": "v1.1.0-69-g38ee283",
-			"Rev": "38ee283dabf11c9cbdb968eebd79b1fa7acbabe6"
+			"Comment": "v1.1.0-71-ge118d44",
+			"Rev": "e118d4451349065b8e7ce0f0af32e033995363f8"
 		},
 		{
 			"ImportPath": "github.com/twinj/uuid",
@@ -15,8 +15,8 @@
 		},
 		{
 			"ImportPath": "github.com/urfave/cli",
-			"Comment": "v1.18.0-20-g73aa67b",
-			"Rev": "73aa67b7a20db7514b1c086866469c49bc93a569"
+			"Comment": "v1.18.0-35-ge43a9fb",
+			"Rev": "e43a9fbf1eb1e0c7a948b73e56ef23aec73c5d84"
 		},
 		{
 			"ImportPath": "gopkg.in/snowplow/snowplow-golang-tracker.v1/tracker",
