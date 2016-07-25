@@ -19,13 +19,13 @@ import (
         "github.com/urfave/cli"
         gt "gopkg.in/snowplow/snowplow-golang-tracker.v1/tracker"
         "os"
-        "strconv"
-)
-
-type SelfDescJson struct {
-        Schema string                 `json:"schema"`
-        Data   map[string]interface{} `json:"data"`
-}
+        "strconv"                                                                                                                                 
+)                                                                                                                                                 
+                                                                                                                                                  
+type SelfDescJson struct {                                                                                                                        
+        Schema string                 `json:"schema"`                                                                                             
+        Data   map[string]interface{} `json:"data"`                                                                                               
+}                                                                                                                                                 
 
 var sdj *gt.SelfDescribingJson
 
@@ -96,7 +96,29 @@ func main() {
                         fmt.Println("Schema:", schema)
                         fmt.Println("JSON:", jsonData)
 
-                        initTracker(collector, appid)
+                        trackerChan := make(chan int, 1)
+                        callback := func(s []gt.CallbackResult, f []gt.CallbackResult) {
+                                fmt.Println("Callback executingggggg")
+                                status := 0
+
+                                if len(s) == 1 {
+                                        status = s[0].Status
+                                }
+
+                                if len(f) == 1 {
+                                        status = f[0].Status
+                                }
+
+                                fmt.Println("Status:", strconv.Itoa(status))
+                                trackerChan <- status
+                        }
+
+                        tracker := initTracker(collector, appid, callback)
+                        trackSelfDescribingEvent(tracker)
+
+                        statusCode := <-trackerChan
+                        fmt.Println("StatusCode: " + strconv.Itoa(statusCode))
+
                 }
 
                 return nil
@@ -105,29 +127,17 @@ func main() {
         app.Run(os.Args)
 }
 
-func initTracker(collector string, appid string) {
-        var successes int
-        var failures int
-
+func initTracker(collector string, appid string, callback func(successCount []gt.CallbackResult, failureCount []gt.CallbackResult)) *gt.Tracker {
         subject := gt.InitSubject()
-        emitter := gt.InitEmitter(
-                gt.RequireCollectorUri(collector),
-                gt.OptionCallback(func(s []gt.CallbackResult, f []gt.CallbackResult) {
-                        successes = len(s)
-                        failures = len(f)
-                }),
-        )
-
+        emitter := gt.InitEmitter(gt.RequireCollectorUri(collector),
+                gt.OptionCallback(callback))
         tracker := gt.InitTracker(
                 gt.RequireEmitter(emitter),
                 gt.OptionSubject(subject),
                 gt.OptionAppId(appid),
         )
 
-        trackSelfDescribingEvent(tracker)
-
-        fmt.Println("Successes: " + strconv.Itoa(successes))
-        fmt.Println("Failures: " + strconv.Itoa(failures))
+        return tracker
 }
 
 func getReturnCode(statusCode int) int {
