@@ -86,8 +86,24 @@ func main() {
                                 fmt.Println("Data:", string(data))
                                 sdj = gt.InitSelfDescribingJson(res.Schema, string(data))
                         } else if schema != "" && jsonData != "" {
-                                sdj = gt.InitSelfDescribingJson(schema, jsonData)
+
+                                fmt.Println(jsonData)
+
+                                b := []byte(jsonData)
+
+                                fmt.Println(b)
+
+                                var jsonDataMap map[string]interface{}
+                                err := json.Unmarshal(b, &jsonDataMap)
+
+                                fmt.Println(jsonDataMap)
+                                fmt.Println(err)
+
+                                sdj = gt.InitSelfDescribingJson(schema, jsonDataMap)
                         }
+
+                        // jsonData        == map[string]interface
+                        // jsonData (JAVA) == Map[String, Object]
 
                         fmt.Println("Collector:", collector)
                         fmt.Println("APP ID:", appid)
@@ -131,7 +147,9 @@ func initTracker(collector string, appid string, requestType string, callback fu
         subject := gt.InitSubject()
         emitter := gt.InitEmitter(gt.RequireCollectorUri(collector),
                 gt.OptionCallback(callback),
-                gt.OptionRequestType(requestType),)
+                gt.OptionRequestType(requestType),
+                gt.OptionDbName("/home/vagrant/test.db"),
+        )
         tracker := gt.InitTracker(
                 gt.RequireEmitter(emitter),
                 gt.OptionSubject(subject),
