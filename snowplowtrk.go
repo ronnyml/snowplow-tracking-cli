@@ -89,9 +89,11 @@ func main() {
                                 b := []byte(jsonData)
                                 var jsonDataMap map[string]interface{}
                                 err := json.Unmarshal(b, &jsonDataMap)
+                                if err != nil {
+                                    panic(err)
+                                }
 
-                                fmt.Println(jsonDataMap)
-                                fmt.Println(err)
+                                fmt.Println("jsonDataMap:", jsonDataMap)
                                 sdj = gt.InitSelfDescribingJson(schema, jsonDataMap)
                         }
 
