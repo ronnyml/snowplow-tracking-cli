@@ -124,7 +124,7 @@ func main() {
 
                         statusCode := <-trackerChan
                         fmt.Println("StatusCode: " + strconv.Itoa(statusCode))
-
+                        fmt.Println("ReturnCode:", getReturnCode(statusCode))
                 }
 
                 return nil
@@ -138,7 +138,6 @@ func initTracker(collector string, appid string, requestType string, callback fu
         emitter := gt.InitEmitter(gt.RequireCollectorUri(collector),
                 gt.OptionCallback(callback),
                 gt.OptionRequestType(requestType),
-                gt.OptionDbName("/home/vagrant/test.db"),
         )
         tracker := gt.InitTracker(
                 gt.RequireEmitter(emitter),
@@ -151,8 +150,9 @@ func initTracker(collector string, appid string, requestType string, callback fu
 
 func getReturnCode(statusCode int) int {
         var returnCode int
+        result := statusCode / 100
 
-        switch statusCode {
+        switch result {
         case 2, 3:
                 returnCode = 0
         case 4:
@@ -161,10 +161,8 @@ func getReturnCode(statusCode int) int {
                 returnCode = 5
         default:
                 returnCode = 1
-
         }
-
-        fmt.Println("ReturnCode:", strconv.Itoa(returnCode))
+        
         return returnCode
 }
 
