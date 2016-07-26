@@ -25,6 +25,9 @@ _testmain.go
 
 # This project's binaries
 snowplow-tracking-cli
+*.db
+*.db-shm
+*.db-wal
 
 # Vagrant
 .vagrant/
