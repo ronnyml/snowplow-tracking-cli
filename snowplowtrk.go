@@ -86,24 +86,14 @@ func main() {
                                 fmt.Println("Data:", string(data))
                                 sdj = gt.InitSelfDescribingJson(res.Schema, string(data))
                         } else if schema != "" && jsonData != "" {
-
-                                fmt.Println(jsonData)
-
                                 b := []byte(jsonData)
-
-                                fmt.Println(b)
-
                                 var jsonDataMap map[string]interface{}
                                 err := json.Unmarshal(b, &jsonDataMap)
 
                                 fmt.Println(jsonDataMap)
                                 fmt.Println(err)
-
                                 sdj = gt.InitSelfDescribingJson(schema, jsonDataMap)
                         }
-
-                        // jsonData        == map[string]interface
-                        // jsonData (JAVA) == Map[String, Object]
 
                         fmt.Println("Collector:", collector)
                         fmt.Println("APP ID:", appid)
@@ -114,7 +104,7 @@ func main() {
 
                         trackerChan := make(chan int, 1)
                         callback := func(s []gt.CallbackResult, f []gt.CallbackResult) {
-                                fmt.Println("Callback executingggggg")
+                                fmt.Println("Callback executing")
                                 status := 0
 
                                 if len(s) == 1 {
@@ -124,8 +114,6 @@ func main() {
                                 if len(f) == 1 {
                                         status = f[0].Status
                                 }
-
-                                fmt.Println("Status:", strconv.Itoa(status))
                                 trackerChan <- status
                         }
 
