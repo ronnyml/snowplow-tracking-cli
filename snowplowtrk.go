@@ -92,6 +92,7 @@ func main() {
                                 sdj = gt.InitSelfDescribingJson(schema, jsonDataMap)
                         }
 
+                        fmt.Println("----------Event Data----------")
                         fmt.Println("Collector:", collector)
                         fmt.Println("APP ID:", appid)
                         fmt.Println("Method:", method)
@@ -118,6 +119,7 @@ func main() {
                         trackSelfDescribingEvent(tracker)
 
                         statusCode := <-trackerChan
+                        fmt.Println("----------Event Response----------")
                         fmt.Println("StatusCode: " + strconv.Itoa(statusCode))
                         fmt.Println("ReturnCode:", getReturnCode(statusCode))
                 }
