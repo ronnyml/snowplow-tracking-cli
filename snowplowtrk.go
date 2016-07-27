@@ -76,23 +76,18 @@ func main() {
                 } else {
                         if sdjson != "" {
                                 res := SelfDescJson{}
-                                json.Unmarshal([]byte(sdjson), &res)
-                                data, err := json.Marshal(res.Data)
+                                err := json.Unmarshal([]byte(sdjson), &res)
                                 if err != nil {
                                         panic(err)
                                 }
 
-                                fmt.Println("Schema:", res.Schema)
-                                fmt.Println("Data:", string(data))
-                                sdj = gt.InitSelfDescribingJson(res.Schema, string(data))
+                                schema = res.Schema
+                                jsonDataMap := res.Data
+                                jsonData = MapToString(res.Data)
+                                fmt.Println("jsonDataMap:", jsonDataMap)
+                                sdj = gt.InitSelfDescribingJson(schema, jsonDataMap)
                         } else if schema != "" && jsonData != "" {
-                                b := []byte(jsonData)
-                                var jsonDataMap map[string]interface{}
-                                err := json.Unmarshal(b, &jsonDataMap)
-                                if err != nil {
-                                    panic(err)
-                                }
-
+                                jsonDataMap := StringToMap(jsonData)
                                 fmt.Println("jsonDataMap:", jsonDataMap)
                                 sdj = gt.InitSelfDescribingJson(schema, jsonDataMap)
                         }
@@ -170,4 +165,23 @@ func trackSelfDescribingEvent(tracker *gt.Tracker) {
         tracker.TrackSelfDescribingEvent(gt.SelfDescribingEvent{
                 Event: sdj,
         })
+}
+
+func StringToMap(str string) map[string]interface{} {
+        var jsonDataMap map[string]interface{}
+        err := json.Unmarshal([]byte(str), &jsonDataMap)
+        if err != nil {
+                panic(err)
+        }
+
+        return jsonDataMap
+}
+
+func MapToString(m map[string]interface{}) string {
+        data, err := json.Marshal(m)
+        if err != nil {
+                panic(err)
+        }
+
+        return string(data)
 }
