@@ -1,5 +1,21 @@
 The Snowplow Tracking CLI is a command-line app (written in Golang) to make it easy to send an event to Snowplow from the command line. Use this to embed Snowplow tracking into your shell scripts.
 
+### Install
+
+Add snowplowtrk and its package dependencies to your go src directory.
+
+```
+go get -v github.com/snowplow/snowplow-tracking-cli
+```
+
+Once the get completes, you should find your new `snowplowtrk` executable sitting inside `$GOPATH/bin/`.
+
+To update snowplowtrk dependencies, use `go get` with the `-u` option.
+
+```
+go get -u -v github.com/snowplow/snowplow-tracking-cli
+```
+
 ### Usage
 
 The app is called `snowplowtrk`.
@@ -7,13 +23,13 @@ The app is called `snowplowtrk`.
 The command line interface is as follows:
 
 ```bash
-snowplowtrk {{COLLECTOR_DOMAIN}} --appid={{APP_ID}} --method=[POST|GET] --sdjson={{SELF_DESC_JSON}}
+snowplowtrk --appid={{APP_ID}} --method=[POST|GET] --sdjson={{SELF_DESC_JSON}} {{COLLECTOR_DOMAIN}}
 ```
     
 or:
 
 ```bash
-snowplowtrk {{COLLECTOR_DOMAIN}} --appid={{APP_ID}} --method=[POST|GET] --schema={{SCHEMA_URI}} --json={{JSON}}
+snowplowtrk --appid={{APP_ID}} --method=[POST|GET] --schema={{SCHEMA_URI}} --json={{JSON}} {{COLLECTOR_DOMAIN}}
 ```
 
 where:
@@ -26,6 +42,15 @@ where:
 * `--json` is a (non-self-describing) JSON, of the form `{ ... }`
 
 The idea here is that you can either send in a self-describing JSON, or pass in the constituent parts (i.e. a regular JSON plus a schema URI) and the Snowplow Tracking CLI will construct the final self-describing JSON for you.
+
+# Examples
+```bash
+snowplowtrk --appid myappid --method POST --schema iglu:com.snowplowanalytics.snowplow/event/jsonschema/1-0-0 --json "{\"hello\":\"world\"}" snowplow-collector.acme.com
+```
+
+```bash
+snowplowtrk --appid myappid --method POST --sdjson "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/event/jsonschema/1-0-0\", \"data\":{\"hello\":\"world\"}}" snowplow-collector.acme.com
+```
 
 Return codes:
 
