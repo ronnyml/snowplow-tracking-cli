@@ -60,6 +60,11 @@ func main() {
         }
 
         app.Action = func(c *cli.Context) error {
+                if len(c.Args()) <= 0 {
+                    cli.ShowAppHelp(c)
+                    return nil
+                }
+
                 collector := c.Args().Get(0)
                 appid := c.String("appid")
                 method := c.String("method")
